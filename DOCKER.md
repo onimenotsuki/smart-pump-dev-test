@@ -1,145 +1,145 @@
 # SMART Pump Docker Implementation
 
-Esta documentación describe cómo ejecutar el proyecto SMART Pump usando Docker y Docker Compose.
+This documentation describes how to run the SMART Pump project using Docker and Docker Compose.
 
-## 🐳 Arquitectura Docker
+## 🐳 Docker Architecture
 
-### Servicios
+### Services
 
 1. **API Backend** (`smart-pump-api`)
    - Express.js + TypeScript
-   - Puerto: 3001
-   - Base de datos: LowDB (JSON)
-   - Autenticación: JWT
+   - Port: 3001
+   - Database: LowDB (JSON)
+   - Authentication: JWT
 
 2. **Frontend Client** (`smart-pump-client`)
    - React + Vite + TypeScript
-   - Puerto: 8000 (Nginx)
-   - Build optimizado para producción
+   - Port: 8000 (Nginx)
+   - Production-optimized build
 
 3. **Database Migration** (`smart-pump-migrate`)
-   - Migración de datos inicial
-   - Ejecuta una sola vez al inicio
+   - Initial data migration
+   - Runs once at startup
 
-## 🚀 Inicio Rápido
+## 🚀 Quick Start
 
-### Opción 1: Script Automatizado (Recomendado)
+### Option 1: Automated Script (Recommended)
 
 ```bash
-# Ejecutar setup completo
+# Run complete setup
 ./scripts/docker-setup.sh
 ```
 
-### Opción 2: Comandos Manuales
+### Option 2: Manual Commands
 
 ```bash
-# Construir imágenes
+# Build images
 docker-compose build
 
-# Ejecutar migración de base de datos
+# Run database migration
 docker-compose run --rm migrate
 
-# Iniciar servicios
+# Start services
 docker-compose up -d
 
-# Ver logs
+# View logs
 docker-compose logs -f
 ```
 
-## 🛠️ Comandos Útiles
+## 🛠️ Useful Commands
 
-### Gestión de Servicios
+### Service Management
 
 ```bash
-# Iniciar servicios
+# Start services
 docker-compose up -d
 
-# Detener servicios
+# Stop services
 docker-compose down
 
-# Reiniciar servicios
+# Restart services
 docker-compose restart
 
-# Ver estado de servicios
+# View service status
 docker-compose ps
 
-# Ver logs
+# View logs
 docker-compose logs -f
 
-# Ver logs de un servicio específico
+# View logs for a specific service
 docker-compose logs -f api
 docker-compose logs -f client
 ```
 
-### Desarrollo
+### Development
 
 ```bash
-# Modo desarrollo (con hot reload)
+# Development mode (with hot reload)
 ./scripts/docker-dev.sh
 
-# O manualmente:
+# Or manually:
 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 ```
 
-### Limpieza
+### Cleanup
 
 ```bash
-# Limpiar todo el entorno Docker
+# Clean entire Docker environment
 ./scripts/docker-clean.sh
 
-# O manualmente:
+# Or manually:
 docker-compose down --rmi all -v
 docker system prune -f
 ```
 
-## 📁 Estructura de Archivos Docker
+## 📁 Docker File Structure
 
 ```
 smart-pump-full-stack/
 ├── Dockerfile.api              # Backend API
 ├── Dockerfile.client           # Frontend Client
-├── docker-compose.yml          # Producción
-├── docker-compose.dev.yml      # Desarrollo
-├── docker-compose.override.yml  # Overrides locales
-├── nginx.conf                  # Configuración Nginx
-├── .dockerignore              # Archivos a ignorar
+├── docker-compose.yml          # Production
+├── docker-compose.dev.yml      # Development
+├── docker-compose.override.yml  # Local overrides
+├── nginx.conf                  # Nginx configuration
+├── .dockerignore              # Files to ignore
 └── scripts/
-    ├── docker-setup.sh        # Setup automático
-    ├── docker-dev.sh          # Modo desarrollo
-    ├── docker-logs.sh         # Ver logs
-    └── docker-clean.sh        # Limpieza
+    ├── docker-setup.sh        # Automated setup
+    ├── docker-dev.sh          # Development mode
+    ├── docker-logs.sh         # View logs
+    └── docker-clean.sh        # Cleanup
 ```
 
-## 🌐 Acceso a la Aplicación
+## 🌐 Application Access
 
-### Producción
-
-- **Frontend:** http://localhost:8000
-- **Backend API:** http://localhost:3001
-- **Health Check:** http://localhost:3001/health
-
-### Desarrollo
+### Production
 
 - **Frontend:** http://localhost:8000
 - **Backend API:** http://localhost:3001
 - **Health Check:** http://localhost:3001/health
 
-## 🔐 Credenciales de Demo
+### Development
+
+- **Frontend:** http://localhost:8000
+- **Backend API:** http://localhost:3001
+- **Health Check:** http://localhost:3001/health
+
+## 🔐 Demo Credentials
 
 ```
 Email: henderson.briggs@geeknet.net
 Password: 23derd*334
 ```
 
-## 📊 Monitoreo y Logs
+## 📊 Monitoring and Logs
 
 ### Health Checks
 
 ```bash
-# Verificar estado de servicios
+# Check service status
 docker-compose ps
 
-# Health check manual
+# Manual health check
 curl http://localhost:3001/health
 curl http://localhost:8000
 ```
@@ -147,22 +147,22 @@ curl http://localhost:8000
 ### Logs
 
 ```bash
-# Todos los servicios
+# All services
 docker-compose logs -f
 
-# Solo API
+# API only
 docker-compose logs -f api
 
-# Solo Client
+# Client only
 docker-compose logs -f client
 
-# Últimas 100 líneas
+# Last 100 lines
 docker-compose logs --tail=100 -f
 ```
 
-## 🔧 Configuración
+## 🔧 Configuration
 
-### Variables de Entorno
+### Environment Variables
 
 #### Backend (API)
 
@@ -181,144 +181,146 @@ FRONTEND_URL=http://localhost:8000
 VITE_API_URL=http://localhost:3001/api
 ```
 
-### Volúmenes
+### Volumes
 
-- `api_data`: Datos de la base de datos
-- `api_logs`: Logs del backend
+- `api_data`: Database data
+- `api_logs`: Backend logs
 
-### Redes
+### Networks
 
-- `smart-pump-network`: Red interna para comunicación entre servicios
+- `smart-pump-network`: Internal network for inter-service communication
 
 ## 🐛 Troubleshooting
 
-### Problemas Comunes
+### Common Issues
 
-1. **Puerto ya en uso**
+1. **Port already in use**
 
    ```bash
-   # Verificar qué está usando el puerto
+   # Check what's using the port
    lsof -i :3001
    lsof -i :8000
 
-   # Cambiar puertos en docker-compose.yml
+   # Change ports in docker-compose.yml
    ```
 
-2. **Servicios no inician**
+2. **Services won't start**
 
    ```bash
-   # Ver logs detallados
+   # View detailed logs
    docker-compose logs api
    docker-compose logs client
 
-   # Reconstruir imágenes
+   # Rebuild images
    docker-compose build --no-cache
    ```
 
-3. **Base de datos no migra**
+3. **Database won't migrate**
 
    ```bash
-   # Ejecutar migración manualmente
+   # Run migration manually
    docker-compose run --rm migrate
    ```
 
-4. **Frontend no carga**
+4. **Frontend won't load**
 
    ```bash
-   # Verificar que el build fue exitoso
+   # Verify the build was successful
    docker-compose logs client
 
-   # Reconstruir solo el cliente
+   # Rebuild client only
    docker-compose build client
    ```
 
-### Comandos de Diagnóstico
+### Diagnostic Commands
 
 ```bash
-# Estado de contenedores
+# Container status
 docker-compose ps
 
-# Uso de recursos
+# Resource usage
 docker stats
 
-# Inspeccionar contenedor
+# Inspect container
 docker-compose exec api sh
 docker-compose exec client sh
 
-# Ver archivos dentro del contenedor
+# View files inside container
 docker-compose exec api ls -la /app
 docker-compose exec client ls -la /usr/share/nginx/html
 ```
 
-## 🔄 Actualizaciones
+## 🔄 Updates
 
-### Actualizar Código
+### Update Code
 
 ```bash
-# Detener servicios
+# Stop services
 docker-compose down
 
-# Reconstruir con cambios
+# Rebuild with changes
 docker-compose build --no-cache
 
-# Iniciar servicios
+# Start services
 docker-compose up -d
 ```
 
-### Actualizar Base de Datos
+### Update Database
 
 ```bash
-# Ejecutar migración
+# Run migration
 docker-compose run --rm migrate
 
-# O reiniciar servicios (migración automática)
+# Or restart services (automatic migration)
 docker-compose restart
 ```
 
-## 📈 Producción
+## 📈 Production
 
-### Optimizaciones
+### Optimizations
 
-1. **Multi-stage builds** para imágenes más pequeñas
-2. **Health checks** para monitoreo
-3. **Volúmenes persistentes** para datos
-4. **Nginx** para servir frontend estático
-5. **Logs centralizados** para debugging
+1. **Multi-stage builds** for smaller images
+2. **Health checks** for monitoring
+3. **Persistent volumes** for data
+4. **Nginx** for serving static frontend
+5. **Centralized logs** for debugging
 
-### Escalabilidad
+### Scalability
 
 ```bash
-# Escalar servicios (si es necesario)
+# Scale services (if needed)
 docker-compose up -d --scale api=2
 ```
 
 ### Backup
 
 ```bash
-# Backup de datos
+# Data backup
 docker-compose exec api tar -czf /tmp/backup.tar.gz /app/data
 docker cp smart-pump-api:/tmp/backup.tar.gz ./backup-$(date +%Y%m%d).tar.gz
 ```
 
 ## 🚀 Deployment
 
-### Docker Swarm (Opcional)
+### Docker Swarm (Optional)
 
 ```bash
-# Inicializar swarm
+# Initialize swarm
 docker swarm init
 
-# Desplegar stack
+# Deploy stack
 docker stack deploy -c docker-compose.yml smart-pump
 ```
 
-### Kubernetes (Opcional)
+### Kubernetes (Optional)
 
-Los archivos Docker pueden ser adaptados para Kubernetes usando herramientas como `kompose`.
+Docker files can be adapted for Kubernetes using tools like `kompose`.
 
-## 📚 Recursos Adicionales
+## 📚 Additional Resources
 
 - [Docker Compose Documentation](https://docs.docker.com/compose/)
 - [Docker Best Practices](https://docs.docker.com/develop/dev-best-practices/)
 - [Nginx Configuration](https://nginx.org/en/docs/)
 - [Node.js Docker Guide](https://nodejs.org/en/docs/guides/nodejs-docker-webapp/)
+
+---

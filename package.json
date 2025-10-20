@@ -1,0 +1,32 @@
+{
+  "name": "smart-pump-full-stack",
+  "version": "1.0.0",
+  "description": "SMART Pump full stack application with Express API and React frontend",
+  "private": true,
+  "workspaces": [
+    "api",
+    "client"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:client\"",
+    "dev:api": "cd api && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "npm run build:api && npm run build:client",
+    "build:api": "cd api && npm run build",
+    "build:client": "cd client && npm run build",
+    "test": "npm run test:api",
+    "test:api": "cd api && npm test",
+    "lint": "npm run lint:api && npm run lint:client",
+    "lint:api": "cd api && npm run lint",
+    "lint:client": "cd client && npm run lint",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "prettier": "^3.1.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

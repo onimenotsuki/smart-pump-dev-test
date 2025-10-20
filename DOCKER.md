@@ -14,7 +14,7 @@ Esta documentación describe cómo ejecutar el proyecto SMART Pump usando Docker
 
 2. **Frontend Client** (`smart-pump-client`)
    - React + Vite + TypeScript
-   - Puerto: 80 (Nginx)
+   - Puerto: 8000 (Nginx)
    - Build optimizado para producción
 
 3. **Database Migration** (`smart-pump-migrate`)
@@ -114,13 +114,13 @@ smart-pump-full-stack/
 
 ### Producción
 
-- **Frontend:** http://localhost:80
+- **Frontend:** http://localhost:8000
 - **Backend API:** http://localhost:3001
 - **Health Check:** http://localhost:3001/health
 
 ### Desarrollo
 
-- **Frontend:** http://localhost:5173
+- **Frontend:** http://localhost:8000
 - **Backend API:** http://localhost:3001
 - **Health Check:** http://localhost:3001/health
 
@@ -141,7 +141,7 @@ docker-compose ps
 
 # Health check manual
 curl http://localhost:3001/health
-curl http://localhost:80
+curl http://localhost:8000
 ```
 
 ### Logs
@@ -172,7 +172,7 @@ PORT=3001
 JWT_SECRET=smart-pump-super-secret-jwt-key-2024-docker
 DB_PATH=./data/database.json
 LOG_LEVEL=info
-FRONTEND_URL=http://localhost:5173
+FRONTEND_URL=http://localhost:8000
 ```
 
 #### Frontend (Client)
@@ -199,7 +199,7 @@ VITE_API_URL=http://localhost:3001/api
    ```bash
    # Verificar qué está usando el puerto
    lsof -i :3001
-   lsof -i :80
+   lsof -i :8000
 
    # Cambiar puertos en docker-compose.yml
    ```

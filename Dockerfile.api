@@ -8,12 +8,14 @@ WORKDIR /app
 COPY api/package*.json ./
 
 # Install dependencies
-RUN npm ci --only=production
+RUN npm install
 
 # Copy source code
 COPY api/src ./src
 COPY api/tsconfig.json ./
 COPY api/jest.config.js ./
+# Copy root tsconfig.json for extends
+COPY tsconfig.json ./../
 
 # Install TypeScript and build tools
 RUN npm install -g typescript ts-node

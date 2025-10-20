@@ -24,8 +24,18 @@ interface OriginalUser {
 
 const migrateUsers = async (): Promise<void> => {
   try {
-    // Read original users.json
-    const usersPath = path.join(process.cwd(), '../data/users.json');
+    // Read original users.json - try both local and Docker paths
+    let usersPath = path.join(process.cwd(), 'data/users.json');
+    if (!fs.existsSync(usersPath)) {
+      usersPath = path.join(process.cwd(), '../data/users.json');
+    }
+
+    if (!fs.existsSync(usersPath)) {
+      throw new Error(
+        `Users file not found. Tried: ${path.join(process.cwd(), 'data/users.json')} and ${path.join(process.cwd(), '../data/users.json')}`
+      );
+    }
+
     const usersData = JSON.parse(fs.readFileSync(usersPath, 'utf8'));
     const originalUsers: OriginalUser[] = usersData.users;
 
@@ -57,19 +67,12 @@ const migrateUsers = async (): Promise<void> => {
     console.log(`✅ Successfully migrated ${migratedUsers.length} users`);
     console.log(`📁 Database created at: ${dbPath}`);
 
-    // Display first user as example
-    const firstUser = migratedUsers[0];
-    const firstOriginalUser = originalUsers[0];
-
-    if (firstUser && firstOriginalUser) {
-      console.log('\n📋 Sample migrated user:');
-      console.log(`   Email: ${firstUser.email}`);
-      console.log(`   Name: ${firstUser.name.first} ${firstUser.name.last}`);
-      console.log(
-        `   Password: [HASHED] (original: ${firstOriginalUser.password})`
-      );
-      console.log(`   Balance: ${firstUser.balance}`);
-    }
+    migratedUsers.forEach(user => {
+      console.log(`   Email: ${user.email}`);
+      console.log(`   Name: ${user.name.first} ${user.name.last}`);
+      console.log(`   Password: [HASHED] (original: ${user.password})`);
+      console.log(`   Balance: ${user.balance}`);
+    });
   } catch (error) {
     console.error('❌ Migration failed:', error);
     process.exit(1);

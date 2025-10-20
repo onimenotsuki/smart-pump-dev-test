@@ -4,6 +4,8 @@ A modern full-stack web application built with TypeScript, Express.js, React, an
 
 **✅ All Tests Passing**: 44 comprehensive tests (33 backend + 11 frontend) ensuring code quality and reliability.
 
+**🔧 Recent Updates**: Docker port configuration updated - Frontend runs on port 8000 for better development experience.
+
 ## 🚀 Features
 
 ### Backend (API)
@@ -100,7 +102,7 @@ cd smart-pump-full-stack
 
 2. **Access the application:**
 
-- Frontend: http://localhost:80
+- Frontend: http://localhost:8000
 - Backend API: http://localhost:3001
 - Health Check: http://localhost:3001/health
 
@@ -332,7 +334,7 @@ npm run preview      # Preview production build
 ### Docker Services
 
 - **API Backend:** Express.js + TypeScript on port 3001
-- **Frontend Client:** React + Vite + Nginx on port 80
+- **Frontend Client:** React + Vite + Nginx on port 8000
 - **Database Migration:** Automatic user data migration
 - **Health Checks:** Built-in monitoring for all services
 

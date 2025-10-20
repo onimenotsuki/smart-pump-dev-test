@@ -15,7 +15,7 @@ services:
       - JWT_SECRET=smart-pump-super-secret-jwt-key-2024-dev
       - DB_PATH=./data/database.json
       - LOG_LEVEL=debug
-      - FRONTEND_URL=http://localhost:5173
+      - FRONTEND_URL=http://localhost:8000
     volumes:
       - ./api/src:/app/src
       - ./api/package.json:/app/package.json
@@ -34,7 +34,7 @@ services:
       dockerfile: Dockerfile.client
     container_name: smart-pump-client-dev
     ports:
-      - "5173:80"
+      - "8000:8000"
     environment:
       - VITE_API_URL=http://localhost:3001/api
     volumes:

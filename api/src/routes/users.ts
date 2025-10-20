@@ -11,6 +11,6 @@ router.use(authenticateToken);
 
 router.get('/me', userController.getProfile);
 router.get('/me/balance', userController.getBalance);
-router.put('/me', validateUserUpdate, userController.updateProfile);
+router.put('/me', ...validateUserUpdate, userController.updateProfile);
 
 export default router;

@@ -1,0 +1,94 @@
+version: "3.8"
+
+services:
+  # Backend API Service
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: smart-pump-api
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - PORT=3001
+      - JWT_SECRET=smart-pump-super-secret-jwt-key-2024-docker
+      - DB_PATH=./data/database.json
+      - LOG_LEVEL=info
+      - FRONTEND_URL=http://localhost:5173
+    volumes:
+      - api_data:/app/data
+      - api_logs:/app/logs
+    networks:
+      - smart-pump-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Frontend Client Service
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: smart-pump-client
+    ports:
+      - "80:80"
+    environment:
+      - VITE_API_URL=http://localhost:3001/api
+    depends_on:
+      - api
+    networks:
+      - smart-pump-network
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://localhost:80/",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 30s
+
+  # Database Migration Service (runs once)
+  migrate:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: smart-pump-migrate
+    environment:
+      - NODE_ENV=production
+      - DB_PATH=./data/database.json
+    volumes:
+      - api_data:/app/data
+    networks:
+      - smart-pump-network
+    command: ["npm", "run", "migrate"]
+    depends_on:
+      - api
+    restart: "no"
+
+volumes:
+  api_data:
+    driver: local
+  api_logs:
+    driver: local
+
+networks:
+  smart-pump-network:
+    driver: bridge

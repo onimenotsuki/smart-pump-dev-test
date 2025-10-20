@@ -12,4 +12,8 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text', 'lcov', 'html'],
   setupFilesAfterEnv: ['<rootDir>/src/__tests__/setup.ts'],
+  moduleNameMapper: {
+    '^lowdb$': '<rootDir>/src/__tests__/__mocks__/lowdb.js',
+    '^lowdb/node$': '<rootDir>/src/__tests__/__mocks__/lowdb-node.js',
+  },
 };

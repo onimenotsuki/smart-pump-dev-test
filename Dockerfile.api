@@ -1,0 +1,41 @@
+# Backend API Dockerfile
+FROM node:18-alpine
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY api/package*.json ./
+
+# Install dependencies
+RUN npm ci --only=production
+
+# Copy source code
+COPY api/src ./src
+COPY api/tsconfig.json ./
+COPY api/jest.config.js ./
+
+# Install TypeScript and build tools
+RUN npm install -g typescript ts-node
+
+# Build the application
+RUN npm run build
+
+# Create logs directory
+RUN mkdir -p logs
+
+# Create data directory
+RUN mkdir -p data
+
+# Copy initial data
+COPY data/users.json ./data/
+
+# Expose port
+EXPOSE 3001
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD node -e "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"
+
+# Start the application
+CMD ["npm", "start"]

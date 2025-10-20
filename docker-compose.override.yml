@@ -1,0 +1,20 @@
+# Development overrides
+version: "3.8"
+
+services:
+  api:
+    environment:
+      - NODE_ENV=development
+      - LOG_LEVEL=debug
+    volumes:
+      - ./api/src:/app/src:ro
+      - ./api/package.json:/app/package.json:ro
+      - ./api/tsconfig.json:/app/tsconfig.json:ro
+    command: ["npm", "run", "dev"]
+
+  client:
+    environment:
+      - VITE_API_URL=http://localhost:3001/api
+    volumes:
+      - ./client/src:/usr/share/nginx/html/src:ro
+      - ./client/public:/usr/share/nginx/html/public:ro

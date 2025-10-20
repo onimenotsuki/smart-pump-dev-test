@@ -2,6 +2,14 @@ import { UserService } from '../../services/userService';
 import { User, UserCreateInput, UserUpdateInput } from '../../models/User';
 import { db } from '../../config/database';
 
+// Mock bcrypt
+jest.mock('bcryptjs', () => ({
+  hash: jest.fn().mockResolvedValue('$2a$12$hashedpassword'),
+  compare: jest.fn().mockImplementation((plain, hash) => {
+    return plain === 'password123' && hash === '$2a$12$hashedpassword';
+  }),
+}));
+
 // Mock the database
 jest.mock('../../config/database', () => ({
   db: {
@@ -40,6 +48,8 @@ describe('UserService', () => {
     userService = new UserService();
     mockDb = db as any;
     mockDb.data = { users: [mockUser] };
+    mockDb.read.mockResolvedValue(undefined);
+    mockDb.write.mockResolvedValue(undefined);
   });
 
   describe('findByEmail', () => {
@@ -55,7 +65,9 @@ describe('UserService', () => {
 
     it('should handle database errors', async () => {
       mockDb.read.mockRejectedValue(new Error('Database error'));
-      await expect(userService.findByEmail('john@example.com')).rejects.toThrow('Database error');
+      await expect(userService.findByEmail('john@example.com')).rejects.toThrow(
+        'Database error'
+      );
     });
   });
 
@@ -85,7 +97,7 @@ describe('UserService', () => {
 
     it('should create new user with hashed password', async () => {
       const result = await userService.create(userData);
-      
+
       expect(result).toMatchObject({
         email: userData.email,
         name: userData.name,
@@ -103,10 +115,12 @@ describe('UserService', () => {
 
     it('should throw error for existing email', async () => {
       mockDb.data.users = [mockUser];
-      await expect(userService.create({
-        ...userData,
-        email: mockUser.email,
-      })).rejects.toThrow('User already exists');
+      await expect(
+        userService.create({
+          ...userData,
+          email: mockUser.email,
+        })
+      ).rejects.toThrow('User already exists');
     });
   });
 
@@ -118,7 +132,7 @@ describe('UserService', () => {
 
     it('should update user data', async () => {
       const result = await userService.update('123', updateData);
-      
+
       expect(result).toMatchObject({
         ...mockUser,
         name: updateData.name,
@@ -133,22 +147,33 @@ describe('UserService', () => {
     });
 
     it('should throw error for duplicate email', async () => {
-      const anotherUser = { ...mockUser, _id: '456', email: 'another@example.com' };
+      const anotherUser = {
+        ...mockUser,
+        _id: '456',
+        email: 'another@example.com',
+      };
       mockDb.data.users = [mockUser, anotherUser];
-      
-      await expect(userService.update('123', { email: 'another@example.com' }))
-        .rejects.toThrow('Email already in use');
+
+      await expect(
+        userService.update('123', { email: 'another@example.com' })
+      ).rejects.toThrow('Email already in use');
     });
   });
 
   describe('validatePassword', () => {
     it('should return true for valid password', async () => {
-      const result = await userService.validatePassword('password123', '$2a$12$hashedpassword');
+      const result = await userService.validatePassword(
+        'password123',
+        '$2a$12$hashedpassword'
+      );
       expect(result).toBe(true);
     });
 
     it('should return false for invalid password', async () => {
-      const result = await userService.validatePassword('wrongpassword', '$2a$12$hashedpassword');
+      const result = await userService.validatePassword(
+        'wrongpassword',
+        '$2a$12$hashedpassword'
+      );
       expect(result).toBe(false);
     });
   });

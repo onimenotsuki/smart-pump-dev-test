@@ -1,0 +1,56 @@
+version: "3.8"
+
+services:
+  # Backend API Service (Development)
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    container_name: smart-pump-api-dev
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=development
+      - PORT=3001
+      - JWT_SECRET=smart-pump-super-secret-jwt-key-2024-dev
+      - DB_PATH=./data/database.json
+      - LOG_LEVEL=debug
+      - FRONTEND_URL=http://localhost:5173
+    volumes:
+      - ./api/src:/app/src
+      - ./api/package.json:/app/package.json
+      - ./api/tsconfig.json:/app/tsconfig.json
+      - ./data:/app/data
+      - api_logs:/app/logs
+    networks:
+      - smart-pump-network
+    restart: unless-stopped
+    command: ["npm", "run", "dev"]
+
+  # Frontend Client Service (Development)
+  client:
+    build:
+      context: .
+      dockerfile: Dockerfile.client
+    container_name: smart-pump-client-dev
+    ports:
+      - "5173:80"
+    environment:
+      - VITE_API_URL=http://localhost:3001/api
+    volumes:
+      - ./client/src:/usr/share/nginx/html/src
+      - ./client/public:/usr/share/nginx/html/public
+      - ./client/index.html:/usr/share/nginx/html/index.html
+    depends_on:
+      - api
+    networks:
+      - smart-pump-network
+    restart: unless-stopped
+
+volumes:
+  api_logs:
+    driver: local
+
+networks:
+  smart-pump-network:
+    driver: bridge

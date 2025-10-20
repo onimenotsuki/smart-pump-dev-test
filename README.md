@@ -81,8 +81,25 @@ smart-pump-full-stack/
 
 - Node.js 18+
 - npm or yarn
+- **OR** Docker & Docker Compose
 
-### Installation
+### Option 1: Docker (Recommended)
+
+1. **Quick Start with Docker:**
+
+```bash
+git clone <repository-url>
+cd smart-pump-full-stack
+./scripts/docker-setup.sh
+```
+
+2. **Access the application:**
+
+- Frontend: http://localhost:80
+- Backend API: http://localhost:3001
+- Health Check: http://localhost:3001/health
+
+### Option 2: Manual Installation
 
 1. **Clone and install dependencies:**
 
@@ -258,6 +275,52 @@ npm run preview      # Preview production build
 1. Build the React app: `npm run build`
 2. Deploy the `dist` folder to static hosting (Vercel, Netlify, etc.)
 
+## 🐳 Docker Support
+
+### Quick Start with Docker
+
+```bash
+# Setup and start all services
+./scripts/docker-setup.sh
+
+# Development mode with hot reload
+./scripts/docker-dev.sh
+
+# View logs
+./scripts/docker-logs.sh
+
+# Clean up everything
+./scripts/docker-clean.sh
+```
+
+### Docker Services
+
+- **API Backend:** Express.js + TypeScript on port 3001
+- **Frontend Client:** React + Vite + Nginx on port 80
+- **Database Migration:** Automatic user data migration
+- **Health Checks:** Built-in monitoring for all services
+
+### Docker Commands
+
+```bash
+# Production
+docker-compose up -d
+
+# Development
+docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+
+# View logs
+docker-compose logs -f
+
+# Stop services
+docker-compose down
+
+# Clean everything
+docker-compose down --rmi all -v
+```
+
+For detailed Docker documentation, see [DOCKER.md](./DOCKER.md).
+
 ## 🤝 Contributing
 
 1. Fork the repository
@@ -277,3 +340,4 @@ This project is licensed under the MIT License.
 - **Tailwind CSS** for the utility-first CSS framework
 - **React Query** for server state management
 - **Express.js** for the robust backend framework
+- **Docker** for containerization support

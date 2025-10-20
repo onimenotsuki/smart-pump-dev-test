@@ -29,7 +29,7 @@ export class UserService {
   async create(userData: UserCreateInput): Promise<User> {
     try {
       await db.read();
-      
+
       // Check if user already exists
       const existingUser = await this.findByEmail(userData.email);
       if (existingUser) {
@@ -73,7 +73,7 @@ export class UserService {
   async update(id: string, updateData: UserUpdateInput): Promise<User | null> {
     try {
       await db.read();
-      
+
       if (!db.data) {
         throw new Error('Database not initialized');
       }
@@ -83,8 +83,13 @@ export class UserService {
         return null;
       }
 
+      const currentUser = db.data.users[userIndex];
+      if (!currentUser) {
+        return null;
+      }
+
       // Check if email is being updated and if it's already taken
-      if (updateData.email && updateData.email !== db.data.users[userIndex].email) {
+      if (updateData.email && updateData.email !== currentUser.email) {
         const existingUser = await this.findByEmail(updateData.email);
         if (existingUser) {
           throw new Error('Email already in use');
@@ -92,13 +97,15 @@ export class UserService {
       }
 
       // Update user data
-      const updatedUser = {
-        ...db.data.users[userIndex],
+      const updatedUser: User = {
+        ...currentUser,
         ...updateData,
-        name: updateData.name ? {
-          ...db.data.users[userIndex].name,
-          ...updateData.name
-        } : db.data.users[userIndex].name
+        name: updateData.name
+          ? {
+              ...currentUser.name,
+              ...updateData.name,
+            }
+          : currentUser.name,
       };
 
       db.data.users[userIndex] = updatedUser;
@@ -112,7 +119,10 @@ export class UserService {
     }
   }
 
-  async validatePassword(plainPassword: string, hashedPassword: string): Promise<boolean> {
+  async validatePassword(
+    plainPassword: string,
+    hashedPassword: string
+  ): Promise<boolean> {
     try {
       return await bcrypt.compare(plainPassword, hashedPassword);
     } catch (error) {
@@ -126,9 +136,9 @@ export class UserService {
   }
 
   private generateGuid(): string {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
-      const r = Math.random() * 16 | 0;
-      const v = c === 'x' ? r : (r & 0x3 | 0x8);
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = (Math.random() * 16) | 0;
+      const v = c === 'x' ? r : (r & 0x3) | 0x8;
       return v.toString(16);
     });
   }

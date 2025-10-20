@@ -2,6 +2,12 @@ import { AuthService } from '../../services/authService';
 import { UserService } from '../../services/userService';
 import { User } from '../../models/User';
 
+// Mock JWT
+jest.mock('jsonwebtoken', () => ({
+  sign: jest.fn().mockReturnValue('mock-jwt-token'),
+  verify: jest.fn().mockReturnValue({ userId: '123' }),
+}));
+
 // Mock the UserService
 jest.mock('../../services/userService');
 jest.mock('../../config/logger', () => ({
@@ -38,7 +44,10 @@ describe('AuthService', () => {
 
   describe('login', () => {
     it('should return token and user data for valid credentials', async () => {
-      const credentials = { email: 'john@example.com', password: 'password123' };
+      const credentials = {
+        email: 'john@example.com',
+        password: 'password123',
+      };
       mockUserService.findByEmail.mockResolvedValue(mockUser);
       mockUserService.validatePassword.mockResolvedValue(true);
 
@@ -47,7 +56,9 @@ describe('AuthService', () => {
       expect(result).toHaveProperty('token');
       expect(result).toHaveProperty('user');
       expect(result.user).not.toHaveProperty('password');
-      expect(mockUserService.findByEmail).toHaveBeenCalledWith(credentials.email);
+      expect(mockUserService.findByEmail).toHaveBeenCalledWith(
+        credentials.email
+      );
       expect(mockUserService.validatePassword).toHaveBeenCalledWith(
         credentials.password,
         mockUser.password
@@ -55,26 +66,41 @@ describe('AuthService', () => {
     });
 
     it('should throw error for non-existent user', async () => {
-      const credentials = { email: 'nonexistent@example.com', password: 'password123' };
+      const credentials = {
+        email: 'nonexistent@example.com',
+        password: 'password123',
+      };
       mockUserService.findByEmail.mockResolvedValue(null);
 
-      await expect(authService.login(credentials)).rejects.toThrow('Invalid credentials');
+      await expect(authService.login(credentials)).rejects.toThrow(
+        'Invalid credentials'
+      );
     });
 
     it('should throw error for inactive user', async () => {
       const inactiveUser = { ...mockUser, isActive: false };
-      const credentials = { email: 'john@example.com', password: 'password123' };
+      const credentials = {
+        email: 'john@example.com',
+        password: 'password123',
+      };
       mockUserService.findByEmail.mockResolvedValue(inactiveUser);
 
-      await expect(authService.login(credentials)).rejects.toThrow('Account is inactive');
+      await expect(authService.login(credentials)).rejects.toThrow(
+        'Account is inactive'
+      );
     });
 
     it('should throw error for invalid password', async () => {
-      const credentials = { email: 'john@example.com', password: 'wrongpassword' };
+      const credentials = {
+        email: 'john@example.com',
+        password: 'wrongpassword',
+      };
       mockUserService.findByEmail.mockResolvedValue(mockUser);
       mockUserService.validatePassword.mockResolvedValue(false);
 
-      await expect(authService.login(credentials)).rejects.toThrow('Invalid credentials');
+      await expect(authService.login(credentials)).rejects.toThrow(
+        'Invalid credentials'
+      );
     });
   });
 
@@ -82,11 +108,6 @@ describe('AuthService', () => {
     it('should return user for valid token', async () => {
       const token = 'valid-token';
       mockUserService.findById.mockResolvedValue(mockUser);
-      
-      // Mock jwt.verify
-      jest.doMock('jsonwebtoken', () => ({
-        verify: jest.fn().mockReturnValue({ userId: mockUser._id }),
-      }));
 
       const result = await authService.verifyToken(token);
       expect(result).toEqual(mockUser);
@@ -94,13 +115,12 @@ describe('AuthService', () => {
 
     it('should return null for invalid token', async () => {
       const token = 'invalid-token';
-      
+
       // Mock jwt.verify to throw error
-      jest.doMock('jsonwebtoken', () => ({
-        verify: jest.fn().mockImplementation(() => {
-          throw new Error('Invalid token');
-        }),
-      }));
+      const jwt = require('jsonwebtoken');
+      jwt.verify.mockImplementation(() => {
+        throw new Error('Invalid token');
+      });
 
       const result = await authService.verifyToken(token);
       expect(result).toBeNull();
@@ -110,10 +130,6 @@ describe('AuthService', () => {
       const inactiveUser = { ...mockUser, isActive: false };
       const token = 'valid-token';
       mockUserService.findById.mockResolvedValue(inactiveUser);
-      
-      jest.doMock('jsonwebtoken', () => ({
-        verify: jest.fn().mockReturnValue({ userId: mockUser._id }),
-      }));
 
       const result = await authService.verifyToken(token);
       expect(result).toBeNull();

@@ -41,6 +41,11 @@ describe('authenticateToken middleware', () => {
     };
     mockNext = jest.fn();
     mockAuthService = new AuthService() as jest.Mocked<AuthService>;
+
+    // Mock the AuthService constructor
+    (AuthService as jest.MockedClass<typeof AuthService>).mockImplementation(
+      () => mockAuthService
+    );
   });
 
   it('should authenticate valid token and set user', async () => {
@@ -58,7 +63,9 @@ describe('authenticateToken middleware', () => {
     await authenticateToken(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(401);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Access token required' });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Access token required',
+    });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
@@ -68,7 +75,9 @@ describe('authenticateToken middleware', () => {
     await authenticateToken(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(401);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Access token required' });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Access token required',
+    });
   });
 
   it('should return 403 for invalid token', async () => {
@@ -78,7 +87,9 @@ describe('authenticateToken middleware', () => {
     await authenticateToken(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(403);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Invalid or expired token' });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Invalid or expired token',
+    });
     expect(mockNext).not.toHaveBeenCalled();
   });
 
@@ -89,7 +100,9 @@ describe('authenticateToken middleware', () => {
     await authenticateToken(mockReq as Request, mockRes as Response, mockNext);
 
     expect(mockRes.status).toHaveBeenCalledWith(500);
-    expect(mockRes.json).toHaveBeenCalledWith({ error: 'Internal server error' });
+    expect(mockRes.json).toHaveBeenCalledWith({
+      error: 'Internal server error',
+    });
     expect(mockNext).not.toHaveBeenCalled();
   });
 });

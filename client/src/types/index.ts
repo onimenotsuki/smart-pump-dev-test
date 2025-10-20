@@ -39,7 +39,6 @@ export interface UserUpdateInput {
   };
   phone?: string;
   address?: string;
-  email?: string;
   company?: string;
 }
 

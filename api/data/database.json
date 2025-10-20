@@ -9,13 +9,13 @@
       "age": 30,
       "eyeColor": "blue",
       "name": {
-        "first": "Henderson",
-        "last": "Briggs"
+        "first": "John",
+        "last": "Doe"
       },
       "company": "GEEKNET",
       "email": "henderson.briggs@geeknet.net",
       "password": "$2a$12$P53ArFAwIohISBpcF3Z/e.0G1TPp7alySjChBHttB68/IA5t.giTq",
-      "phone": "+1 (936) 451-3590",
+      "phone": "+1234567890",
       "address": "121 National Drive, Cotopaxi, Michigan, 8240"
     },
     {
@@ -66,7 +66,7 @@
         "first": "Gibson",
         "last": "Duke"
       },
-      "company": "ZILLAR",
+      "company": "ZILLAR CORP",
       "email": "gibson.duke@zillar.com",
       "password": "$2a$12$.YNaOx.M.jUcqV/CFZx7RelKX8mtG0GdX5tAjeGEPI55WnaelKAEe",
       "phone": "+1 (971) 473-2320",
@@ -84,7 +84,7 @@
         "first": "Ruby",
         "last": "Glenn"
       },
-      "company": "WATERBABY",
+      "company": "WATER",
       "email": "ruby.glenn@waterbaby.co.uk",
       "password": "$2a$12$/WJP3P7MoVnKkZSO68MPcO7mLLk9N1zvWWpg2/XxAQy30Mzz4Copa",
       "phone": "+1 (800) 433-3997",

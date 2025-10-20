@@ -13,20 +13,44 @@ export const useProfile = () => {
 export const useBalance = () => {
   return useQuery({
     queryKey: ['balance'],
-    queryFn: apiClient.getBalance,
+    queryFn: async () => {
+      console.log('Fetching balance...');
+      try {
+        const result = await apiClient.getBalance();
+        console.log('Balance fetched successfully:', result);
+        return result;
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+        throw error;
+      }
+    },
     staleTime: 2 * 60 * 1000, // 2 minutes
+    refetchOnWindowFocus: true,
+    retry: 3,
   });
+};
+
+export const useRefreshBalance = () => {
+  const queryClient = useQueryClient();
+
+  return () => {
+    queryClient.invalidateQueries({ queryKey: ['balance'] });
+  };
 };
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (updateData: UserUpdateInput) => apiClient.updateProfile(updateData),
+    mutationFn: (updateData: UserUpdateInput) =>
+      apiClient.updateProfile(updateData),
     onSuccess: (updatedUser: User) => {
       // Update the profile cache
       queryClient.setQueryData(['profile'], updatedUser);
-      
+
+      // Invalidate and refetch profile to ensure consistency
+      queryClient.invalidateQueries({ queryKey: ['profile'] });
+
       // Update user in auth context
       const storedUser = localStorage.getItem('user');
       if (storedUser) {
